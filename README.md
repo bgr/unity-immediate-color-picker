@@ -1,3 +1,29 @@
+# Fork changes
+
+* Made into a package
+  * can be imported from Unity Package Manager via git url
+  * this required the file structure to be reorganized and assembly definition files to be added
+  * author info in package.json has been filled with original author's info found on their public github profile
+  * package name, displayName and version were chosen arbitrarily
+* Added alpha slider
+* Added setter to `Color` so it can be assigned to at any time
+* Added backup color preview
+  * Displays the color that was originally passed, for comparison with currently picked color
+  * Can be clicked to "undo" the color change
+  * Can be set via exposed `RevertColor` field
+* Added `SetColor` method
+  * It will update both `Color` and `RevertColor` to given color
+* Increased height of preview color rectangle a bit
+* Fixed "unreachable code" warning
+* Updated original example to demonstrate `SetColor` capability
+  * Example scenes can be imported from Package Manager's interface
+
+See commit messages for complete list of changes.
+
+Original readme below:
+
+---
+
 unity-immediate-color-picker
 =================
 
