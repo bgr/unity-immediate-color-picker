@@ -205,7 +205,7 @@ namespace imColorPicker
 										ClearPresetSelection();
                                         return;
                                     }
-                                    break;
+                                    // break;
                             }
                         }
                         GUILayout.Space(1f);
