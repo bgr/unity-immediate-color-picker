@@ -1,0 +1,21 @@
+{
+  "name": "org.mattatz.imcolorpicker",
+  "version": "1.0.0",
+  "displayName": "IM Color Picker",
+  "description": "Immediate-mode Color Picker. Adapted into Unity Package from original repo at https://github.com/mattatz/unity-immediate-color-picker",
+  "unity": "2019.2",
+  "dependencies": {},
+  "keywords": [ "color", "picker", "im", "immediate", "mode", "ongui" ],
+  "author": {
+    "name": "mattatz",
+    "email": "masatatsu.nakamura@gmail.com"
+  },
+  "hideInEditor": false,
+  "samples": [
+    {
+      "displayName": "Original test scenes",
+      "description": "Test scenes that were included in original github repo",
+      "path": "Samples~"
+    }
+  ]
+}

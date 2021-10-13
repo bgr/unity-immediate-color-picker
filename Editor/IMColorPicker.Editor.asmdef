@@ -1,0 +1,17 @@
+{
+    "name": "IMColorPicker.Editor",
+    "references": [
+        "GUID:b105b64de843cca429427ec05b6fc0db"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
