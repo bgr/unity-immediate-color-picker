@@ -6,11 +6,17 @@ namespace imColorPicker
     public class IMColorPicker
     {
 
-        public Color color
+        public Color Color
         {
             get
             {
                 return _color;
+            }
+            set
+            {
+                _color = value;
+                IMColorUtil.RGBToHSV(_color, out h, out s, out v);
+                UpdateSVTexture(_color, svTexture);
             }
         }
 
@@ -52,7 +58,7 @@ namespace imColorPicker
         int selectedPreset = -1;
 
         Texture2D hueTexture, svTexture;
-        Texture2D circle, rightArrow, leftArrow, button, buttonHighlighted;
+        Texture2D circle, rightArrow, leftArrow, upArrow, button, buttonHighlighted;
 
         const int kHSVPickerSize = 120, kHuePickerWidth = 16;
 
@@ -73,6 +79,7 @@ namespace imColorPicker
             circle = Resources.Load<Texture2D>("imCircle");
             rightArrow = Resources.Load<Texture2D>("imRight");
             leftArrow = Resources.Load<Texture2D>("imLeft");
+            upArrow = Resources.Load<Texture2D>("imUp");
             button = Resources.Load<Texture2D>("imBorder");
             buttonHighlighted = Resources.Load<Texture2D>("imBorderHighlighted");
 
@@ -126,20 +133,20 @@ namespace imColorPicker
             using (new GUILayout.VerticalScope())
             {
                 GUILayout.Space(5f);
-                DrawPreview(_color);
+                DrawPreview(ref _color);
 
-                GUILayout.Space(5f);
+                GUILayout.Space(10f);
                 DrawHSVPicker(ref _color);
 
                 if (preset != null)
                 {
                     GUILayout.Space(5f);
-                    DrawPresets(ref _color);
+                    DrawPresets();
                 }
             }
         }
 
-        void DrawPreview(Color c)
+        void DrawPreview(ref Color c)
         {
             using (new GUILayout.VerticalScope())
             {
@@ -151,7 +158,9 @@ namespace imColorPicker
 
                 var alpha = c.a;
                 GUI.backgroundColor = new Color(alpha, alpha, alpha);
-                GUILayout.Label("", previewStyle, GUILayout.Width(kHSVPickerSize + kHuePickerWidth + 10), GUILayout.Height(2f));
+                GUILayout.Label("", previewStyle, GUILayout.Width(kHSVPickerSize + kHuePickerWidth + 10), GUILayout.Height(5f));
+
+                DrawAlphaHandler(GUILayoutUtility.GetLastRect(), ref c);
 
                 GUI.backgroundColor = tmp;
             }
@@ -171,7 +180,7 @@ namespace imColorPicker
             }
         }
 
-        void DrawPresets(ref Color c)
+        void DrawPresets()
         {
             const int presetSize = 16;
 
@@ -189,17 +198,15 @@ namespace imColorPicker
                     var limit = Mathf.Min(n, (offset + 1) * 10);
                     for (int i = offset * 10; i < limit; i++)
                     {
-                        var color = preset.Colors[i];
-                        GUI.backgroundColor = color;
+                        var presetColor = preset.Colors[i];
+                        GUI.backgroundColor = presetColor;
                         if (GUILayout.Button(" ", (i == selectedPreset) ? presetHighlightedStyle : presetStyle, GUILayout.Width(presetSize), GUILayout.Height(presetSize)))
                         {
                             switch (e.button)
                             {
                                 case 0:
                                     selectedPreset = i;
-                                    c = color;
-                                    IMColorUtil.RGBToHSV(c, out h, out s, out v);
-                                    UpdateSVTexture(c, svTexture);
+                                    Color = presetColor;
                                     break;
                                 case 1:
                                     {
@@ -221,7 +228,7 @@ namespace imColorPicker
             {
                 if (GUILayout.Button("Save", GUILayout.Width(buttonWidth), GUILayout.Height(buttonHeight)))
                 {
-                    preset.Save(c);
+                    preset.Save(Color);
                     selectedPreset = preset.Colors.Count - 1;
                 }
                 if (selectedPreset >= 0 && GUILayout.Button("Remove", GUILayout.Width(buttonWidth), GUILayout.Height(buttonHeight)))
@@ -249,7 +256,9 @@ namespace imColorPicker
             {
                 s = (p.x - rect.x) / rect.width;
                 v = 1f - (p.y - rect.y) / rect.height;
+                float a = c.a;
                 c = IMColorUtil.HSVToRGB(h, s, v);
+                c.a = a;
 
                 e.Use();
                 ClearPresetSelection();
@@ -267,8 +276,33 @@ namespace imColorPicker
             if (e.button == 0 && (e.type == EventType.MouseDown || e.type == EventType.MouseDrag) && rect.Contains(p))
             {
                 h = 1f - (p.y - rect.y) / rect.height;
+                float a = c.a;
                 c = IMColorUtil.HSVToRGB(h, s, v);
+                c.a = a;
                 UpdateSVTexture(c, svTexture);
+
+                e.Use();
+
+                ClearPresetSelection();
+            }
+        }
+
+        void DrawAlphaHandler(Rect rect, ref Color c)
+        {
+            const float size = 15f;
+            float a = c.a;
+            GUI.DrawTexture(new Rect(rect.x + a * rect.width - size * 0.5f, rect.y, size, size), upArrow);
+
+            var e = Event.current;
+            var p = e.mousePosition;
+
+            // original rect would make it hard to make alpha exactly 0 or exactly 1, need to make it wider
+            // and expanding it on vertical axis a bit allows for better UX
+            var expandedRect = new Rect(rect.x - 5, rect.y - 7, rect.width + 10, rect.height + 14);
+
+            if (e.button == 0 && (e.type == EventType.MouseDown || e.type == EventType.MouseDrag) && expandedRect.Contains(p))
+            {
+                c.a = Mathf.Clamp01((p.x - rect.x) / rect.width);
 
                 e.Use();
 
