@@ -20,6 +20,8 @@ namespace imColorPicker
             }
         }
 
+        public Color RevertColor;
+
         public float H
         {
             get
@@ -68,6 +70,7 @@ namespace imColorPicker
         public IMColorPicker(Color c, IMColorPreset pr)
         {
             _color = c;
+            RevertColor = c;
             preset = pr;
             Setup();
         }
@@ -108,6 +111,13 @@ namespace imColorPicker
         {
             windowRect.x = x;
             windowRect.y = y;
+        }
+
+        /// <summary>Updates both operating color (Color field) and backup color (RevertColor) to given color.</summary>
+        public void SetColor(Color color)
+        {
+            Color = color;
+            RevertColor = color;
         }
 
         public void DrawWindow(int id = 0, string title = "IMColorPicker")
@@ -151,14 +161,26 @@ namespace imColorPicker
             using (new GUILayout.VerticalScope())
             {
                 var tmp = GUI.backgroundColor;
-                GUI.backgroundColor = new Color(c.r, c.g, c.b);
-                GUILayout.Label("", previewStyle, GUILayout.Width(kHSVPickerSize + kHuePickerWidth + 10), GUILayout.Height(12f));
+
+                float width = kHSVPickerSize + kHuePickerWidth + 10;
+
+                using (new GUILayout.HorizontalScope())
+                {
+                    // operating color
+                    GUI.backgroundColor = new Color(c.r, c.g, c.b);  // ignores alpha
+                    GUILayout.Label("", previewStyle, GUILayout.Width(width * 0.6f), GUILayout.Height(14f));
+                    // backup color
+                    GUI.backgroundColor = new Color(RevertColor.r, RevertColor.g, RevertColor.b);
+                    bool revertClicked = GUILayout.Button("", previewStyle, GUILayout.Width(width * 0.4f), GUILayout.Height(14f));
+
+                    if (revertClicked) c = RevertColor;
+                }
 
                 GUILayout.Space(1f);
 
                 var alpha = c.a;
                 GUI.backgroundColor = new Color(alpha, alpha, alpha);
-                GUILayout.Label("", previewStyle, GUILayout.Width(kHSVPickerSize + kHuePickerWidth + 10), GUILayout.Height(5f));
+                GUILayout.Label("", previewStyle, GUILayout.Width(width), GUILayout.Height(3f));
 
                 DrawAlphaHandler(GUILayoutUtility.GetLastRect(), ref c);
 
