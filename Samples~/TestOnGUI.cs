@@ -1,13 +1,10 @@
 ﻿using UnityEngine;
-using System.Collections;
-
 using imColorPicker;
 
 namespace imColorPickerTest
 {
-
-    public class TestOnGUI : MonoBehaviour {
-
+    public class TestOnGUI : MonoBehaviour
+    {
         [SerializeField] IMColorPreset preset;
         [SerializeField] Color color;
 
@@ -16,38 +13,34 @@ namespace imColorPickerTest
 
         void OnGUI()
         {
-            if(colorPicker == null)
+            if (colorPicker == null)
             {
-                colorPicker = new IMColorPicker(preset);
+                colorPicker = new IMColorPicker(color, preset);
+                colorPicker.SetWindowPosition(150, 20);
             }
 
-            using(new GUILayout.HorizontalScope())
-            {
-                window = GUILayout.Toggle(window, "Window");
-            }
+            window = GUILayout.Toggle(window, "Window");
 
-            if(window)
+            if (window)
             {
                 colorPicker.DrawWindow();
-            } else
+            }
+            else
             {
-                using(new GUILayout.HorizontalScope())
-                {
-                    GUILayout.Space(10f);
-                    using(new GUILayout.VerticalScope())
-                    {
-                        GUILayout.Space(10f);
-                        GUILayout.Label("IMColorPicker");
-                        colorPicker.DrawColorPicker();
-                    }
-                }
+                colorPicker.DrawColorPicker();
             }
 
-            color = colorPicker.color;
-        } 
+            color = colorPicker.Color;
 
+            using (new GUILayout.VerticalScope())
+            {
+                GUILayout.Space(30);
+                GUILayout.Label("Change picker's color:");
+                if (GUILayout.Button("Red")) colorPicker.SetColor(new Color(.9f, .1f, .1f));
+                if (GUILayout.Button("Yellow")) colorPicker.SetColor(Color.yellow);
+                if (GUILayout.Button("Dark green")) colorPicker.SetColor(new Color(.1f, .4f, .1f));
+                if (GUILayout.Button("Semi-transparent")) colorPicker.SetColor(new Color(.5f, .5f, .5f, .5f));
+            }
+        }
     }
-
 }
-
-
