@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 namespace imColorPicker
 {
 
-    public class IMColorPicker {
+    public class IMColorPicker
+    {
 
         public Color color
         {
@@ -49,17 +49,17 @@ namespace imColorPicker
         GUIStyle labelStyle;
         GUIStyle svStyle, hueStyle;
         GUIStyle presetStyle, presetHighlightedStyle;
-		int selectedPreset = -1;
+        int selectedPreset = -1;
 
         Texture2D hueTexture, svTexture;
         Texture2D circle, rightArrow, leftArrow, button, buttonHighlighted;
 
         const int kHSVPickerSize = 120, kHuePickerWidth = 16;
 
-        public IMColorPicker () : this(Color.red, null) {}
-        public IMColorPicker (Color c) : this(c, null) {}
-        public IMColorPicker (IMColorPreset pr) : this(Color.red, pr) {}
-        public IMColorPicker (Color c, IMColorPreset pr)
+        public IMColorPicker() : this(Color.red, null) { }
+        public IMColorPicker(Color c) : this(c, null) { }
+        public IMColorPicker(IMColorPreset pr) : this(Color.red, pr) { }
+        public IMColorPicker(Color c, IMColorPreset pr)
         {
             _color = c;
             preset = pr;
@@ -93,16 +93,17 @@ namespace imColorPicker
             presetStyle = new GUIStyle();
             presetStyle.normal.background = button;
 
-			presetHighlightedStyle = new GUIStyle();
+            presetHighlightedStyle = new GUIStyle();
             presetHighlightedStyle.normal.background = buttonHighlighted;
         }
 
-		public void SetWindowPosition(float x, float y) {
-			windowRect.x = x;
-			windowRect.y = y;
-		}
+        public void SetWindowPosition(float x, float y)
+        {
+            windowRect.x = x;
+            windowRect.y = y;
+        }
 
-        public void DrawWindow (int id = 0, string title = "IMColorPicker")
+        public void DrawWindow(int id = 0, string title = "IMColorPicker")
         {
             windowRect = GUI.Window(id, windowRect, DrawColorPickerWindow, title);
         }
@@ -130,7 +131,7 @@ namespace imColorPicker
                 GUILayout.Space(5f);
                 DrawHSVPicker(ref _color);
 
-                if(preset != null)
+                if (preset != null)
                 {
                     GUILayout.Space(5f);
                     DrawPresets(ref _color);
@@ -170,7 +171,7 @@ namespace imColorPicker
             }
         }
 
-        void DrawPresets (ref Color c)
+        void DrawPresets(ref Color c)
         {
             const int presetSize = 16;
 
@@ -180,21 +181,22 @@ namespace imColorPicker
             var tmp = GUI.backgroundColor;
             int n = preset.Colors.Count;
             var e = Event.current;
-            for(int offset = 0, m = n / 10; offset <= m; offset++)
+            for (int offset = 0, m = n / 10; offset <= m; offset++)
             {
-                using(new GUILayout.HorizontalScope())
+                using (new GUILayout.HorizontalScope())
                 {
                     GUILayout.Space(1f);
                     var limit = Mathf.Min(n, (offset + 1) * 10);
-                    for(int i = offset * 10; i < limit; i++)
+                    for (int i = offset * 10; i < limit; i++)
                     {
                         var color = preset.Colors[i];
                         GUI.backgroundColor = color;
-                        if(GUILayout.Button(" ", (i == selectedPreset) ? presetHighlightedStyle : presetStyle, GUILayout.Width(presetSize), GUILayout.Height(presetSize))) {
-                            switch(e.button)
+                        if (GUILayout.Button(" ", (i == selectedPreset) ? presetHighlightedStyle : presetStyle, GUILayout.Width(presetSize), GUILayout.Height(presetSize)))
+                        {
+                            switch (e.button)
                             {
                                 case 0:
-									selectedPreset = i;
+                                    selectedPreset = i;
                                     c = color;
                                     IMColorUtil.RGBToHSV(c, out h, out s, out v);
                                     UpdateSVTexture(c, svTexture);
@@ -202,7 +204,7 @@ namespace imColorPicker
                                 case 1:
                                     {
                                         preset.Colors.RemoveAt(i);
-										ClearPresetSelection();
+                                        ClearPresetSelection();
                                         return;
                                     }
                                     // break;
@@ -214,24 +216,26 @@ namespace imColorPicker
             }
 
             GUI.backgroundColor = tmp;
-			const int buttonWidth = 67, buttonHeight = 20;
-			using(new GUILayout.HorizontalScope()) {
-				if(GUILayout.Button("Save", GUILayout.Width(buttonWidth), GUILayout.Height(buttonHeight)))
-	            {
-	                preset.Save(c);
-					selectedPreset = preset.Colors.Count - 1;
-	            }
-				if(selectedPreset >= 0 && GUILayout.Button("Remove", GUILayout.Width(buttonWidth), GUILayout.Height(buttonHeight)))
-	            {
-					preset.Colors.RemoveAt(selectedPreset);
-					ClearPresetSelection();
-	            }
-			}
+            const int buttonWidth = 67, buttonHeight = 20;
+            using (new GUILayout.HorizontalScope())
+            {
+                if (GUILayout.Button("Save", GUILayout.Width(buttonWidth), GUILayout.Height(buttonHeight)))
+                {
+                    preset.Save(c);
+                    selectedPreset = preset.Colors.Count - 1;
+                }
+                if (selectedPreset >= 0 && GUILayout.Button("Remove", GUILayout.Width(buttonWidth), GUILayout.Height(buttonHeight)))
+                {
+                    preset.Colors.RemoveAt(selectedPreset);
+                    ClearPresetSelection();
+                }
+            }
         }
 
-		void ClearPresetSelection () {
-			selectedPreset = -1;
-		}
+        void ClearPresetSelection()
+        {
+            selectedPreset = -1;
+        }
 
         void DrawSVHandler(Rect rect, ref Color c)
         {
@@ -241,18 +245,18 @@ namespace imColorPicker
 
             var e = Event.current;
             var p = e.mousePosition;
-            if(e.button == 0 && (e.type == EventType.MouseDown || e.type == EventType.MouseDrag) && rect.Contains(p))
+            if (e.button == 0 && (e.type == EventType.MouseDown || e.type == EventType.MouseDrag) && rect.Contains(p))
             {
                 s = (p.x - rect.x) / rect.width;
                 v = 1f - (p.y - rect.y) / rect.height;
                 c = IMColorUtil.HSVToRGB(h, s, v);
 
                 e.Use();
-				ClearPresetSelection();
+                ClearPresetSelection();
             }
         }
 
-        void DrawHueHandler (Rect rect, ref Color c)
+        void DrawHueHandler(Rect rect, ref Color c)
         {
             const float size = 15f;
             GUI.DrawTexture(new Rect(rect.x - size * 0.75f, rect.y + (1f - h) * rect.height - size * 0.5f, size, size), rightArrow);
@@ -260,7 +264,7 @@ namespace imColorPicker
 
             var e = Event.current;
             var p = e.mousePosition;
-            if(e.button == 0 && (e.type == EventType.MouseDown || e.type == EventType.MouseDrag) && rect.Contains(p))
+            if (e.button == 0 && (e.type == EventType.MouseDown || e.type == EventType.MouseDrag) && rect.Contains(p))
             {
                 h = 1f - (p.y - rect.y) / rect.height;
                 c = IMColorUtil.HSVToRGB(h, s, v);
@@ -268,7 +272,7 @@ namespace imColorPicker
 
                 e.Use();
 
-				ClearPresetSelection();
+                ClearPresetSelection();
             }
         }
 
@@ -281,7 +285,7 @@ namespace imColorPicker
             for (int y = 0; y < size; y++)
             {
                 var v = 1f * y / size;
-                for(int x = 0; x < size; x++)
+                for (int x = 0; x < size; x++)
                 {
                     var s = 1f * x / size;
                     var color = IMColorUtil.HSVToRGB(h, s, v);
@@ -295,11 +299,11 @@ namespace imColorPicker
         Texture2D CreateHueTexture(int width, int height)
         {
             var tex = new Texture2D(width, height);
-            for(int y = 0; y < height; y++)
+            for (int y = 0; y < height; y++)
             {
                 var h = 1f * y / height;
                 var color = IMColorUtil.HSVToRGB(h, 1f, 1f);
-                for(int x = 0; x < width; x++)
+                for (int x = 0; x < width; x++)
                 {
                     tex.SetPixel(x, y, color);
                 }
@@ -314,8 +318,5 @@ namespace imColorPicker
             UpdateSVTexture(c, tex);
             return tex;
         }
-
     }
-
 }
-
