@@ -173,7 +173,7 @@ namespace imColorPicker
                     GUI.backgroundColor = new Color(RevertColor.r, RevertColor.g, RevertColor.b);
                     bool revertClicked = GUILayout.Button("", previewStyle, GUILayout.Width(width * 0.4f), GUILayout.Height(14f));
 
-                    if (revertClicked) c = RevertColor;
+                    if (revertClicked) Color = RevertColor;
                 }
 
                 GUILayout.Space(1f);
